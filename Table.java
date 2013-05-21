@@ -94,9 +94,9 @@ class Table {
         goals.put(t1, g1 + homeGoals.get(idx));
       }
       {
-        String t2 = home.get(idx);
+        String t2 = away.get(idx);
         Integer g2 = goals.containsKey(t2) ? goals.get(t2) : 0;
-        goals.put(t2, g2 + homeGoals.get(idx));
+        goals.put(t2, g2 + awayGoals.get(idx));
       }
     }
     String winner = "<error>";
