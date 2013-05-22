@@ -14,7 +14,7 @@ import java.util.Map.Entry;
  * 
  * Data Source: http://www.football-data.co.uk/italym.php
  */
-class Table {
+class SoccerTable implements ITable {
 
   private static DateFormat   dateFmtOut = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -31,7 +31,7 @@ class Table {
   private StringBuilder       sb         = new StringBuilder();
   final private static String linebreak  = System.getProperty("line.separator");
 
-  Table() {
+  SoccerTable() {
     date = new ArrayList<Date>();
     home = new ArrayList<String>();
     away = new ArrayList<String>();
@@ -65,6 +65,7 @@ class Table {
     return sb.toString();
   }
 
+  @Override
   public void addRow(String[] tokens) throws ParseException {
     for (int i = 0; i < table.length; i++) {
       Columns.ColDef<?> cd = Columns.colDefs[i];
@@ -82,23 +83,22 @@ class Table {
     return sum;
   }
 
+  /** helper for maxGoals */
+  private void accumulateGoals(HashMap<String, Integer> goals, List<String> who, List<Integer> howmany) {
+    for (int idx = 0; idx < date.size(); idx++) {
+      String t1 = who.get(idx);
+      Integer g1 = goals.containsKey(t1) ? goals.get(t1) : 0;
+      goals.put(t1, g1 + howmany.get(idx));
+    }
+  }
+
   /**
    * @return the team name, that had the most goals in total
    */
   public String maxGoals() {
     HashMap<String, Integer> goals = new HashMap<String, Integer>();
-    for (int idx = 0; idx < date.size(); idx++) {
-      {
-        String t1 = home.get(idx);
-        Integer g1 = goals.containsKey(t1) ? goals.get(t1) : 0;
-        goals.put(t1, g1 + homeGoals.get(idx));
-      }
-      {
-        String t2 = away.get(idx);
-        Integer g2 = goals.containsKey(t2) ? goals.get(t2) : 0;
-        goals.put(t2, g2 + awayGoals.get(idx));
-      }
-    }
+    accumulateGoals(goals, home, homeGoals);
+    accumulateGoals(goals, away, awayGoals);
     String winner = "<error>";
     Integer max = -1;
     for (Entry<String, Integer> entry : goals.entrySet()) {

@@ -7,7 +7,8 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * Definitions of the tables. This is just one way how this can be accomplished.
+ * Definitions of table columns. This is just one way how this can be
+ * accomplished.
  */
 public class Columns {
   /**
