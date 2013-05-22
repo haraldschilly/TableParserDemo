@@ -1,9 +1,11 @@
-package at.univie.mat.pp.tableparser;
 // (c) Harald Schilly 2013, License: Apache 2.0
+
+package at.univie.mat.pp.tableparser;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -13,11 +15,15 @@ import java.util.Locale;
  */
 public class Columns {
   /**
-   * this is the abstract base class for all column definitions.
+   * This is the abstract base class for all column definitions. A column is
+   * bascially an extended {@link ArrayList} and it additionally records the
+   * index of the column in the source table, the name in the first row and the
+   * target type.
    * 
    * @param <T>
    */
-  static abstract class ColDef<T> {
+  @SuppressWarnings("serial")
+  public static abstract class Column<T> extends ArrayList<T> {
     private String  name;
     private Integer idx;
 
@@ -30,7 +36,7 @@ public class Columns {
      * @param type
      *          the class of the type in this column
      */
-    ColDef(Integer idx, String name, Class<T> type) {
+    Column(Integer idx, String name, Class<T> type) {
       this.idx = idx;
       this.name = name;
     }
@@ -44,12 +50,23 @@ public class Columns {
     }
 
     abstract T parse(String token) throws ParseException;
+
+    /**
+     * calls the {@link ArrayList#add(Object)} function after an unsafe cast
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean add(Object parse) {
+      return super.add((T) parse);
+    }
   }
 
   /**
-   * this column definition processes a string as a string and trims it.
+   * this column definition processes a string as a string and
+   * {@link String#trim() trims} it.
    */
-  static class ColDefString extends ColDef<String> {
+  @SuppressWarnings("serial")
+  public static class ColDefString extends Column<String> {
     ColDefString(Integer idx, String name) {
       super(idx, name, String.class);
     }
@@ -61,10 +78,11 @@ public class Columns {
   }
 
   /**
-   * This column definition parses a single integer.
+   * This column definition parses a single {@link Integer}.
    */
-  static class ColDefInt extends ColDef<Integer> {
-    ColDefInt(Integer idx, String name) {
+  @SuppressWarnings("serial")
+  static class ColumnInteger extends Column<Integer> {
+    ColumnInteger(Integer idx, String name) {
       super(idx, name, Integer.class);
     }
 
@@ -74,54 +92,26 @@ public class Columns {
     }
   }
 
-  final public static ColDef<Date> dateCD;
-  final static ColDefString        homeCD;      // home team name
-  final static ColDefString        awayCD;      // away team name
-  final static ColDefInt           homeGoalsCD; // home goals
-  final static ColDefInt           awayGoalsCD; // away goals
-  final static ColDefInt           homeShootsCD; // home shoots
-  final static ColDefInt           awayShootsCD; // away shoots
+  /**
+   * This column holds {@link Date} Objects
+   */
+  @SuppressWarnings("serial")
+  static class ColumnDate extends Column<Date> {
+    private DateFormat dateFmt;
 
-  final static ColDef<?>[]         colDefs;
+    public ColumnDate(Integer idx, String name, String dateFmt) {
+      super(idx, name, Date.class);
+      this.dateFmt = new SimpleDateFormat(dateFmt, Locale.ENGLISH);
+    }
 
-  static {
-    dateCD = new ColDef<Date>(1, "Date", Date.class) {
-      private DateFormat dateFmt = new SimpleDateFormat("dd/MM/yy", Locale.ENGLISH);
-
-      @Override
-      Date parse(String token) throws ParseException {
-        return dateFmt.parse(token);
-      }
-    };
-
-    homeCD = new ColDefString(2, "HomeTeam");
-    awayCD = new ColDefString(3, "AwayTeam");
-
-    homeGoalsCD = new ColDefInt(4, "FTHG");
-    awayGoalsCD = new ColDefInt(5, "FTAG");
-    homeShootsCD = new ColDefInt(10, "HS");
-    awayShootsCD = new ColDefInt(11, "AS");
-
-    colDefs = new ColDef[] { dateCD, homeCD, awayCD, homeGoalsCD, awayGoalsCD, homeShootsCD, awayShootsCD };
-  }
+    @Override
+    Date parse(String token) throws ParseException {
+      return dateFmt.parse(token);
+    }
+  };
 
   // disabling constructor because there are just static fields and methods
   private Columns() {
   }
 
-  static boolean checkFirstRow(String[] tokens) throws Exception {
-    boolean ok = true;
-    for (ColDef<?> def : colDefs) {
-      int i = def.getIdx();
-      String str = def.getName();
-      if (!tokens[i].equals(str)) {
-        System.err.println(String.format("column %d is not %s but %s", i, str, tokens[i]));
-        ok = false;
-      }
-    }
-    if (!ok) {
-      throw new Exception("wrong columns");
-    }
-    return true;
-  }
 }

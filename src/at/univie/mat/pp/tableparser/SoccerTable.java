@@ -1,56 +1,47 @@
-package at.univie.mat.pp.tableparser;
 // (c) Harald Schilly 2013, License: Apache 2.0
+
+package at.univie.mat.pp.tableparser;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+
+import at.univie.mat.pp.tableparser.Columns.ColDefString;
+import at.univie.mat.pp.tableparser.Columns.Column;
+import at.univie.mat.pp.tableparser.Columns.ColumnDate;
+import at.univie.mat.pp.tableparser.Columns.ColumnInteger;
 
 /**
  * Holds the parsed data.
  * 
  * Data Source: http://www.football-data.co.uk/italym.php
  */
-class SoccerTable implements ITable {
-
-  private static DateFormat   dateFmtOut = new SimpleDateFormat("yyyy-MM-dd");
-
-  private List<Date>          date;
-  private List<String>        home;
-  private List<String>        away;
-  private List<Integer>       homeGoals;
-  private List<Integer>       awayGoals;
-  private List<Integer>       homeShoots;
-  private List<Integer>       awayShoots;
-
-  private List[]              table;
-
-  private StringBuilder       sb         = new StringBuilder();
+public class SoccerTable extends AbstractTable {
   final private static String linebreak  = System.getProperty("line.separator");
+  private StringBuilder       sb         = new StringBuilder();
+  private DateFormat          dateFmtOut = new SimpleDateFormat("yyyy-MM-dd");
 
-  SoccerTable() {
-    date = new ArrayList<Date>();
-    home = new ArrayList<String>();
-    away = new ArrayList<String>();
-    homeGoals = new ArrayList<Integer>();
-    awayGoals = new ArrayList<Integer>();
-    homeShoots = new ArrayList<Integer>();
-    awayShoots = new ArrayList<Integer>();
-    table = new List[] { date, home, away, homeGoals, awayGoals, homeShoots, awayShoots };
-  }
+  private ColumnDate          date;
+  private ColDefString        home;
+  private ColDefString        away;
+  private ColumnInteger       homeGoals;
+  private ColumnInteger       awayGoals;
+  private ColumnInteger       homeShoots;
+  private ColumnInteger       awayShoots;
 
-  void addRow(Date d, String h, String a, int hGoal, int aGoal, int hShoots, int aShoots) {
-    date.add(d);
-    home.add(h);
-    away.add(a);
-    homeGoals.add(hGoal);
-    awayGoals.add(aGoal);
-    homeShoots.add(hShoots);
-    awayShoots.add(aShoots);
+  public SoccerTable() {
+    date = new ColumnDate(1, "Date", "dd/MM/yy");
+    home = new ColDefString(2, "HomeTeam");
+    away = new ColDefString(3, "AwayTeam");
+    homeGoals = new ColumnInteger(4, "FTHG");
+    awayGoals = new ColumnInteger(5, "FTAG");
+    homeShoots = new ColumnInteger(10, "HS");
+    awayShoots = new ColumnInteger(11, "AS");
+
+    table = new Column[] { date, home, away, homeGoals, awayGoals, homeShoots, awayShoots };
   }
 
   @Override
@@ -67,16 +58,16 @@ class SoccerTable implements ITable {
   }
 
   @Override
-  public void addRow(String[] tokens) throws ParseException {
+  public void parseRow(String[] tokens) throws ParseException {
     for (int i = 0; i < table.length; i++) {
-      Columns.ColDef<?> cd = Columns.colDefs[i];
+      Columns.Column<?> cd = table[i];
       table[i].add(cd.parse(tokens[cd.getIdx()]));
     }
   }
 
   public Integer totalGoals() {
     Integer sum = 0;
-    for (List<Integer> goalCol : new List[] { homeGoals, awayGoals }) {
+    for (ColumnInteger goalCol : new ColumnInteger[] { homeGoals, awayGoals }) {
       for (Integer goals : goalCol) {
         sum += goals;
       }

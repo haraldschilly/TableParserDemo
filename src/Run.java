@@ -1,9 +1,10 @@
 // (c) Harald Schilly 2013, License: Apache 2.0
 
-package at.univie.mat.pp.tableparser;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import at.univie.mat.pp.tableparser.CsvUrlParser;
+import at.univie.mat.pp.tableparser.SoccerTable;
 
 /**
  * Runs the parser, data from <a
