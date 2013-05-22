@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import at.univie.mat.pp.tableparser.Columns.ColDefString;
+import at.univie.mat.pp.tableparser.Columns.ColumnString;
 import at.univie.mat.pp.tableparser.Columns.Column;
 import at.univie.mat.pp.tableparser.Columns.ColumnDate;
 import at.univie.mat.pp.tableparser.Columns.ColumnInteger;
@@ -25,8 +25,8 @@ public class SoccerTable extends AbstractTable {
   private DateFormat          dateFmtOut = new SimpleDateFormat("yyyy-MM-dd");
 
   private ColumnDate          date;
-  private ColDefString        home;
-  private ColDefString        away;
+  private ColumnString        home;
+  private ColumnString        away;
   private ColumnInteger       homeGoals;
   private ColumnInteger       awayGoals;
   private ColumnInteger       homeShoots;
@@ -34,8 +34,8 @@ public class SoccerTable extends AbstractTable {
 
   public SoccerTable() {
     date = new ColumnDate(1, "Date", "dd/MM/yy");
-    home = new ColDefString(2, "HomeTeam");
-    away = new ColDefString(3, "AwayTeam");
+    home = new ColumnString(2, "HomeTeam");
+    away = new ColumnString(3, "AwayTeam");
     homeGoals = new ColumnInteger(4, "FTHG");
     awayGoals = new ColumnInteger(5, "FTAG");
     homeShoots = new ColumnInteger(10, "HS");

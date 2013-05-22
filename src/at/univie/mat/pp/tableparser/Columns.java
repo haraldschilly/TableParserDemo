@@ -66,8 +66,8 @@ public class Columns {
    * {@link String#trim() trims} it.
    */
   @SuppressWarnings("serial")
-  public static class ColDefString extends Column<String> {
-    ColDefString(Integer idx, String name) {
+  public static class ColumnString extends Column<String> {
+    ColumnString(Integer idx, String name) {
       super(idx, name, String.class);
     }
 
