@@ -1,3 +1,4 @@
+package at.univie.mat.pp.tableparser;
 // (c) Harald Schilly 2013, License: Apache 2.0
 
 import java.text.DateFormat;
