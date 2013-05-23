@@ -2,11 +2,13 @@
 
 package at.univie.mat.pp.tableparser;
 
+import java.io.InputStream;
+
 /**
  * This is the interface for all parsers, right now there is only
- * {@link CsvUrlParser}.
+ * {@link CsvParser} via {@link AbstractParser}.
  * 
  */
 public interface IParser {
-  public AbstractTable parse(String url) throws Exception;
+  public AbstractTable parse(InputStream input) throws Exception;
 }

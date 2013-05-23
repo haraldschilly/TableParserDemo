@@ -8,7 +8,7 @@ import at.univie.mat.pp.tableparser.Columns.Column;
 
 /**
  * All Tables, currently just one, need to implement this interface. This is
- * used by the {@link CsvUrlParser} to feed into the data.
+ * used by the {@link CsvParser} to feed into the data.
  */
 public abstract class AbstractTable {
   protected Column<?>[] table;
